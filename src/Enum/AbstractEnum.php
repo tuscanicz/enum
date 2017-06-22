@@ -5,35 +5,25 @@ namespace Enum;
 use InvalidArgumentException;
 use ReflectionClass;
 
-/**
- * Class AbstractEnum
- * @package Enum
- */
 abstract class AbstractEnum implements EnumInterface
 {
-    /**
-     * @var mixed
-     */
+    /** @var mixed */
     private $value;
 
-    /**
-     * @var array
-     */
-    private static $cache = array();
+    /** @var array */
+    private static $cache = [];
 
-    /**
-     * Default value
-     * @var mixed
-     */
-    protected static $default;
+    /** @var mixed */
+    protected static $defaultValue;
 
     /**
      * @param $value
+     * @throws InvalidArgumentException
      */
     public function __construct($value = null)
     {
-        if (is_null($value)) {
-            $value = static::$default;
+        if ($value === null) {
+            $value = static::$defaultValue;
         }
 
         static::initialize();
@@ -55,7 +45,7 @@ abstract class AbstractEnum implements EnumInterface
      */
     public static function getDefault()
     {
-        return new static(self::$default);
+        return new static(self::getDefaultValue());
     }
 
     /**
@@ -63,7 +53,7 @@ abstract class AbstractEnum implements EnumInterface
      */
     public static function getDefaultValue()
     {
-        return self::$default;
+        return static::$defaultValue;
     }
 
     /**
@@ -71,37 +61,35 @@ abstract class AbstractEnum implements EnumInterface
      */
     protected static function loadValues()
     {
-        $r = new ReflectionClass(get_called_class());
+        $reflectionClass = new ReflectionClass(static::class);
 
-        return $r->getConstants();
+        return $reflectionClass->getConstants();
     }
 
     protected static function initialize()
     {
-        $className = get_called_class();
-
-        if (!isset(self::$cache[$className]['values'])) {
+        $className = static::class;
+        if (isset(self::$cache[$className]['values']) === false) {
             self::$cache[$className]['values'] = static::loadValues();
         }
     }
 
     /**
-     * @return mixed
+     * @return mixed[]
      */
     public static function getValues()
     {
         static::initialize();
 
-        return self::$cache[get_called_class()]['values'];
+        return self::$cache[static::class]['values'];
     }
 
     /**
-     * @return mixed
+     * @return static[]
      */
     public static function getEnums()
     {
-        $className = get_called_class();
-
+        $className = static::class;
         if (!isset(self::$cache[$className]['enums'])) {
             foreach (static::getValues() as $value) {
                 self::$cache[$className]['enums'][$value] = new static($value);
@@ -116,8 +104,7 @@ abstract class AbstractEnum implements EnumInterface
      */
     protected static function loadLabels()
     {
-        $arr = array();
-
+        $arr = [];
         foreach (static::getEnums() as $enum) {
             $arr[$enum->getValue()] = $enum->getLabel();
         }
@@ -130,9 +117,8 @@ abstract class AbstractEnum implements EnumInterface
      */
     public static function getLabels()
     {
-        $className = get_called_class();
-
-        if (!isset(self::$cache[$className]['labels'])) {
+        $className = static::class;
+        if (isset(self::$cache[$className]['labels']) === false) {
             self::$cache[$className]['labels'] = static::loadLabels();
         }
 
@@ -145,7 +131,7 @@ abstract class AbstractEnum implements EnumInterface
      */
     public static function hasValue($value)
     {
-        return in_array($value, static::getValues());
+        return in_array($value, static::getValues(), true);
     }
 
     /**
@@ -157,18 +143,22 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      * @throws InvalidArgumentException
      */
     protected function checkValue($value)
     {
-        if (!static::hasValue($value)) {
+        if ($value === null) {
+            throw new InvalidArgumentException('Enum value is not defined');
+        }
+        if (static::hasValue($value) === false) {
             throw new InvalidArgumentException('Value "' . $value . '" is not defined');
         }
     }
 
     /**
      * @param $value
+     * @throws InvalidArgumentException
      */
     protected function setValue($value)
     {
@@ -187,6 +177,7 @@ abstract class AbstractEnum implements EnumInterface
 
     /**
      * @param EnumInterface|string $value
+     * @throws InvalidArgumentException
      * @return bool
      */
     public function is($value)
@@ -197,7 +188,7 @@ abstract class AbstractEnum implements EnumInterface
 
         $this->checkValue($value);
 
-        return $value == $this->getValue();
+        return $value === $this->getValue();
     }
 
     protected function normalizeValues(array $values)
@@ -219,7 +210,7 @@ abstract class AbstractEnum implements EnumInterface
      */
     public function in(array $values)
     {
-        return in_array($this->getValue(), $this->normalizeValues($values));
+        return in_array($this->getValue(), $this->normalizeValues($values), true);
     }
 
     /**

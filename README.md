@@ -1,7 +1,7 @@
-enum
+Strict enum
 ====
 
-PHP implementation of Enum
+PHP implementation of Enum with strict comparisons
 
 ```php
 <?php
