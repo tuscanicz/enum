@@ -34,5 +34,8 @@
     },
     "replace": {
         "kstefan/enum": "self.version"
+    },
+    "conflict": {
+        "kstefan/enum": "<=1.0"
     }
 }
