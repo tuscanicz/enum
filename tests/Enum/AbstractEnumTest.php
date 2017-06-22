@@ -127,6 +127,6 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
     public function testGetDefaultWithDefault()
     {
         self::assertEquals('new', EntityStatusEnum::getDefault());
-        self::assertEquals('new', EntityStatusEnum::getDefaultValue(true));
+        self::assertEquals('new', EntityStatusEnum::getDefaultValue());
     }
 }
