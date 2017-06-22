@@ -44,3 +44,11 @@ echo $monday->getLabel();
 print_r(Day::getLabels());
 // Array ( [0] => Sunday [1] => Monday [2] => Tuesday [3] => Wednesday [4] => Thursday [5] => Friday [6] => Saturday )
 ```
+
+# Contribute
+
+[![Build Status](https://travis-ci.org/tuscanicz/enum.svg?branch=master)](https://travis-ci.org/tuscanicz/enum)
+
+Feel free to contribute!
+
+Please, run the tests via phpunit ``php vendor/phpunit/phpunit/phpunit`` and keep the code coverage.
