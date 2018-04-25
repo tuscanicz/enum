@@ -4,6 +4,7 @@ namespace Enum;
 
 use Fixtures\EmployeeNameEnum;
 use Fixtures\EntityStatusEnum;
+use Fixtures\ExtendedEnum;
 use InvalidArgumentException;
 use PHPUnit_Framework_TestCase;
 
@@ -16,7 +17,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         new EmployeeNameEnum();
     }
 
-    public function testConstructWithDefaultAsArgument()
+    public function testConstructWithoutDefaultWithArgument()
     {
         $enum = new EmployeeNameEnum(EmployeeNameEnum::GEORGE_JONES);
 
@@ -24,14 +25,22 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         self::assertEquals('george-jones', $enum->getLabel());
     }
 
-    public function testConstructWithInvalidDefaultAsArgument()
+    public function testConstructExtended()
+    {
+        $enum = new ExtendedEnum(ExtendedEnum::GEORGE_JONES);
+
+        self::assertEquals('george-jones', $enum->getValue());
+        self::assertEquals('george-jones', $enum->getLabel());
+    }
+
+    public function testConstructWithInvalidArgumentWillFail()
     {
         $this->setExpectedException(InvalidArgumentException::class, 'Value "invalid" is not defined');
 
         new EmployeeNameEnum('invalid');
     }
 
-    public function testCreateWithDefaultAsArgument()
+    public function testCreateWithoutDefaultAsArgument()
     {
         $enum = EmployeeNameEnum::create(EmployeeNameEnum::GEORGE_JONES);
 
@@ -78,6 +87,19 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testExtendedIs()
+    {
+        $enum = new ExtendedEnum(ExtendedEnum::GEORGE_JONES);
+
+        self::assertTrue($enum->is(ExtendedEnum::GEORGE_JONES));
+        self::assertFalse($enum->is(ExtendedEnum::JANE_BROWN));
+        self::assertTrue(
+            $enum->is(
+                new ExtendedEnum(ExtendedEnum::GEORGE_JONES)
+            )
+        );
+    }
+
     public function testIn()
     {
         $enum = new EmployeeNameEnum(EmployeeNameEnum::GEORGE_JONES);
@@ -111,6 +133,44 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
                 [
                     new EmployeeNameEnum(EmployeeNameEnum::JANE_BROWN),
                     new EmployeeNameEnum(EmployeeNameEnum::MARY_WILSON)
+                ]
+            )
+        );
+    }
+
+    public function testExtendedIn()
+    {
+        $enum = new ExtendedEnum(ExtendedEnum::GEORGE_JONES);
+
+        self::assertTrue(
+            $enum->in(
+                [
+                    ExtendedEnum::GEORGE_JONES,
+                    ExtendedEnum::JANE_BROWN
+                ]
+            )
+        );
+        self::assertFalse(
+            $enum->in(
+                [
+                    ExtendedEnum::JANE_BROWN,
+                    ExtendedEnum::MARY_WILSON
+                ]
+            )
+        );
+        self::assertTrue(
+            $enum->in(
+                [
+                    new ExtendedEnum(ExtendedEnum::GEORGE_JONES),
+                    new ExtendedEnum(ExtendedEnum::JANE_BROWN)
+                ]
+            )
+        );
+        self::assertFalse(
+            $enum->in(
+                [
+                    new ExtendedEnum(ExtendedEnum::JANE_BROWN),
+                    new ExtendedEnum(ExtendedEnum::MARY_WILSON)
                 ]
             )
         );
