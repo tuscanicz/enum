@@ -3,6 +3,7 @@
 namespace Enum;
 
 use Fixtures\EmployeeNameEnum;
+use Fixtures\EmployeeNameWithLabelEnum;
 use Fixtures\EntityStatusEnum;
 use Fixtures\ExtendedEnum;
 use InvalidArgumentException;
@@ -85,6 +86,14 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
                 new EmployeeNameEnum(EmployeeNameEnum::GEORGE_JONES)
             )
         );
+    }
+
+    public function testWithCustomLabel()
+    {
+        $enum = new EmployeeNameWithLabelEnum(EmployeeNameWithLabelEnum::GEORGE_JONES);
+
+        self::assertEquals('george-jones', $enum->getValue());
+        self::assertEquals('Label of value: george-jones (12 character long)', $enum->getLabel());
     }
 
     public function testExtendedIs()
