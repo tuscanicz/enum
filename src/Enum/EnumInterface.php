@@ -8,12 +8,12 @@ interface EnumInterface
 {
 
     /**
-     * @param mixed $value
+     * @param int|string $value
      */
-    public function __construct($value = null);
+    public function __construct($value);
 
     /**
-     * @return mixed
+     * @return int|string
      */
     public function getValue();
 
