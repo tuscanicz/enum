@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Enum;
 
 use InvalidArgumentException;
@@ -7,13 +9,14 @@ use ReflectionClass;
 
 abstract class AbstractEnum implements EnumInterface
 {
-    /** @var string|int|null */
+
+    /** @var string|int */
     private $value;
 
-    /** @var array */
-    private static $cache = [];
+    /** @var mixed[] */
+    private static array $cache;
 
-    /** @var string|int|null */
+    /** @var string|int */
     protected static $defaultValue;
 
     /**
@@ -25,7 +28,6 @@ abstract class AbstractEnum implements EnumInterface
         if ($value === null) {
             $value = static::$defaultValue;
         }
-
         static::initialize();
 
         $this->setValue($value);
@@ -35,15 +37,12 @@ abstract class AbstractEnum implements EnumInterface
      * @param string|int|null $value
      * @return static
      */
-    public static function create($value)
+    public static function create($value): self
     {
         return new static($value);
     }
 
-    /**
-     * @return static
-     */
-    public static function getDefault()
+    public static function getDefault(): self
     {
         return new static(self::getDefaultValue());
     }
@@ -57,27 +56,9 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @return array
+     * @return string[]|int[]
      */
-    protected static function loadValues()
-    {
-        $reflectionClass = new ReflectionClass(static::class);
-
-        return $reflectionClass->getConstants();
-    }
-
-    protected static function initialize()
-    {
-        $className = static::class;
-        if (isset(self::$cache[$className]['values']) === false) {
-            self::$cache[$className]['values'] = static::loadValues();
-        }
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public static function getValues()
+    public static function getValues(): array
     {
         static::initialize();
 
@@ -87,10 +68,10 @@ abstract class AbstractEnum implements EnumInterface
     /**
      * @return static[]
      */
-    public static function getEnums()
+    public static function getEnums(): array
     {
         $className = static::class;
-        if (!isset(self::$cache[$className]['enums'])) {
+        if (isset(self::$cache[$className]['enums']) === false) {
             foreach (static::getValues() as $value) {
                 self::$cache[$className]['enums'][$value] = new static($value);
             }
@@ -100,22 +81,9 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @return array
+     * @return array<int|string, int|string>
      */
-    protected static function loadLabels()
-    {
-        $arr = [];
-        foreach (static::getEnums() as $enum) {
-            $arr[$enum->getValue()] = $enum->getLabel();
-        }
-
-        return $arr;
-    }
-
-    /**
-     * @return mixed
-     */
-    public static function getLabels()
+    public static function getLabels(): array
     {
         $className = static::class;
         if (isset(self::$cache[$className]['labels']) === false) {
@@ -126,16 +94,16 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @param string|int $value
+     * @param string|int|null $value
      * @return bool
      */
-    public static function hasValue($value)
+    public static function hasValue($value): bool
     {
         return in_array($value, static::getValues(), true);
     }
 
     /**
-     * @return mixed
+     * @return string|int
      */
     public function getValue()
     {
@@ -143,32 +111,7 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @param mixed $value
-     * @throws InvalidArgumentException
-     */
-    protected function checkValue($value)
-    {
-        if ($value === null) {
-            throw new InvalidArgumentException('Enum value is not defined');
-        }
-        if (static::hasValue($value) === false) {
-            throw new InvalidArgumentException('Value "' . $value . '" is not defined');
-        }
-    }
-
-    /**
-     * @param $value
-     * @throws InvalidArgumentException
-     */
-    protected function setValue($value)
-    {
-        $this->checkValue($value);
-
-        $this->value = $value;
-    }
-
-    /**
-     * @return mixed
+     * @return string|int
      */
     public function getLabel()
     {
@@ -176,48 +119,99 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @param EnumInterface|string|int $value
-     * @throws InvalidArgumentException
+     * @param EnumInterface|string|int|null $value
      * @return bool
+     * @throws InvalidArgumentException
      */
-    public function is($value)
+    public function is($value): bool
     {
         if ($value instanceof EnumInterface) {
             $value = $value->getValue();
         }
-
         $this->checkValue($value);
 
         return $value === $this->getValue();
     }
 
-    protected function normalizeValues(array $values)
+    /**
+     * @param EnumInterface[]|string[]|int[]|null[] $values
+     * @return bool
+     */
+    public function in(array $values): bool
     {
-        return array_map(function($value) {
+        return in_array($this->getValue(), $this->normalizeValues($values), true);
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->value;
+    }
+
+    private function normalizeValues(array $values): array
+    {
+        return array_map(function ($value) {
             if ($value instanceof EnumInterface) {
                 $value = $value->getValue();
             }
-
             $this->checkValue($value);
 
             return $value;
         }, $values);
     }
 
-    /**
-     * @param array $values [Enum::VALUE_1, new Enum(Enum:VALUE_2),]
-     * @return bool
-     */
-    public function in(array $values)
+    private static function initialize(): void
     {
-        return in_array($this->getValue(), $this->normalizeValues($values), true);
+        $className = static::class;
+        if (isset(self::$cache[$className]['values']) === false) {
+            self::$cache[$className]['values'] = static::loadValues();
+        }
+    }
+
+    private static function loadValues(): array
+    {
+        $reflectionClass = new ReflectionClass(static::class);
+
+        return $reflectionClass->getConstants();
     }
 
     /**
-     * @return string
+     * @return array<int|string, int|string>
      */
-    public function __toString()
+    private static function loadLabels(): array
     {
-        return (string) $this->value;
+        $arr = [];
+        foreach (static::getEnums() as $enum) {
+            $arr[$enum->getValue()] = $enum->getLabel();
+        }
+
+        return $arr;
     }
+
+    /**
+     * @param string|int|null $value
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    private function setValue($value): void
+    {
+        $this->checkValue($value);
+
+        $this->value = $value;
+    }
+
+    /**
+     * @param null|string|int $value
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    private function checkValue($value): void
+    {
+        if ($value === null) {
+            throw new InvalidArgumentException('Enum value is not defined');
+        }
+        if (static::hasValue($value) === false) {
+            throw new InvalidArgumentException('Value "'.$value.'" is not defined');
+        }
+    }
+
 }

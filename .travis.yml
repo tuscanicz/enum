@@ -13,4 +13,4 @@ before_script:
   - cp phpunit.xml.dist phpunit.xml
 
 script:
-  - vendor/phpunit/phpunit/phpunit
+  - composer ci

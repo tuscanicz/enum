@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Enum;
 
 use Fixtures\EmployeeNameEnum;
@@ -7,18 +9,20 @@ use Fixtures\EmployeeNameWithLabelEnum;
 use Fixtures\EntityStatusEnum;
 use Fixtures\ExtendedEnum;
 use InvalidArgumentException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class AbstractEnumTest extends PHPUnit_Framework_TestCase
+class AbstractEnumTest extends TestCase
 {
-    public function testConstructWithoutDefaultWillFail()
+
+    public function testConstructWithoutDefaultWillFail(): void
     {
-        $this->setExpectedException(InvalidArgumentException::class, 'Enum value is not defined');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Enum value is not defined');
 
         new EmployeeNameEnum();
     }
 
-    public function testConstructWithoutDefaultWithArgument()
+    public function testConstructWithoutDefaultWithArgument(): void
     {
         $enum = new EmployeeNameEnum(EmployeeNameEnum::GEORGE_JONES);
 
@@ -26,7 +30,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         self::assertEquals('george-jones', $enum->getLabel());
     }
 
-    public function testConstructExtended()
+    public function testConstructExtended(): void
     {
         $enum = new ExtendedEnum(ExtendedEnum::GEORGE_JONES);
 
@@ -34,14 +38,15 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         self::assertEquals('george-jones', $enum->getLabel());
     }
 
-    public function testConstructWithInvalidArgumentWillFail()
+    public function testConstructWithInvalidArgumentWillFail(): void
     {
-        $this->setExpectedException(InvalidArgumentException::class, 'Value "invalid" is not defined');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Value "invalid" is not defined');
 
         new EmployeeNameEnum('invalid');
     }
 
-    public function testCreateWithoutDefaultAsArgument()
+    public function testCreateWithoutDefaultAsArgument(): void
     {
         $enum = EmployeeNameEnum::create(EmployeeNameEnum::GEORGE_JONES);
 
@@ -50,32 +55,33 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         self::assertEquals('george-jones', (string)$enum);
     }
 
-    public function testHasCorrectValues()
+    public function testHasCorrectValues(): void
     {
         self::assertNull(EmployeeNameEnum::getDefaultValue());
         self::assertTrue(EmployeeNameEnum::hasValue('george-jones'));
     }
 
-    public function testGetDefaultWithoutDefaultWillFail()
+    public function testGetDefaultWithoutDefaultWillFail(): void
     {
-        $this->setExpectedException(InvalidArgumentException::class, 'Enum value is not defined');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Enum value is not defined');
 
         self::assertNull(EmployeeNameEnum::getDefault());
     }
 
-    public function testGetValues()
+    public function testGetValues(): void
     {
         self::assertContains('george-jones', EmployeeNameEnum::getValues());
         self::assertCount(5, EmployeeNameEnum::getValues());
     }
 
-    public function testGetLabels()
+    public function testGetLabels(): void
     {
         self::assertContains('george-jones', EmployeeNameEnum::getLabels());
         self::assertCount(5, EmployeeNameEnum::getLabels());
     }
 
-    public function testIs()
+    public function testIs(): void
     {
         $enum = new EmployeeNameEnum(EmployeeNameEnum::GEORGE_JONES);
 
@@ -88,7 +94,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testWithCustomLabel()
+    public function testWithCustomLabel(): void
     {
         $enum = new EmployeeNameWithLabelEnum(EmployeeNameWithLabelEnum::GEORGE_JONES);
 
@@ -96,7 +102,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         self::assertEquals('Label of value: george-jones (12 character long)', $enum->getLabel());
     }
 
-    public function testExtendedIs()
+    public function testExtendedIs(): void
     {
         $enum = new ExtendedEnum(ExtendedEnum::GEORGE_JONES);
 
@@ -109,7 +115,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testIn()
+    public function testIn(): void
     {
         $enum = new EmployeeNameEnum(EmployeeNameEnum::GEORGE_JONES);
 
@@ -117,7 +123,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     EmployeeNameEnum::GEORGE_JONES,
-                    EmployeeNameEnum::JANE_BROWN
+                    EmployeeNameEnum::JANE_BROWN,
                 ]
             )
         );
@@ -125,7 +131,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     EmployeeNameEnum::JANE_BROWN,
-                    EmployeeNameEnum::MARY_WILSON
+                    EmployeeNameEnum::MARY_WILSON,
                 ]
             )
         );
@@ -133,7 +139,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     new EmployeeNameEnum(EmployeeNameEnum::GEORGE_JONES),
-                    new EmployeeNameEnum(EmployeeNameEnum::JANE_BROWN)
+                    new EmployeeNameEnum(EmployeeNameEnum::JANE_BROWN),
                 ]
             )
         );
@@ -141,13 +147,13 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     new EmployeeNameEnum(EmployeeNameEnum::JANE_BROWN),
-                    new EmployeeNameEnum(EmployeeNameEnum::MARY_WILSON)
+                    new EmployeeNameEnum(EmployeeNameEnum::MARY_WILSON),
                 ]
             )
         );
     }
 
-    public function testExtendedIn()
+    public function testExtendedIn(): void
     {
         $enum = new ExtendedEnum(ExtendedEnum::GEORGE_JONES);
 
@@ -155,7 +161,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     ExtendedEnum::GEORGE_JONES,
-                    ExtendedEnum::JANE_BROWN
+                    ExtendedEnum::JANE_BROWN,
                 ]
             )
         );
@@ -163,7 +169,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     ExtendedEnum::JANE_BROWN,
-                    ExtendedEnum::MARY_WILSON
+                    ExtendedEnum::MARY_WILSON,
                 ]
             )
         );
@@ -171,7 +177,7 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     new ExtendedEnum(ExtendedEnum::GEORGE_JONES),
-                    new ExtendedEnum(ExtendedEnum::JANE_BROWN)
+                    new ExtendedEnum(ExtendedEnum::JANE_BROWN),
                 ]
             )
         );
@@ -179,13 +185,13 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
             $enum->in(
                 [
                     new ExtendedEnum(ExtendedEnum::JANE_BROWN),
-                    new ExtendedEnum(ExtendedEnum::MARY_WILSON)
+                    new ExtendedEnum(ExtendedEnum::MARY_WILSON),
                 ]
             )
         );
     }
 
-    public function testConstructWithDefault()
+    public function testConstructWithDefault(): void
     {
         $enum = new EntityStatusEnum();
 
@@ -193,9 +199,10 @@ class AbstractEnumTest extends PHPUnit_Framework_TestCase
         self::assertEquals('new', $enum->getLabel());
     }
 
-    public function testGetDefaultWithDefault()
+    public function testGetDefaultWithDefault(): void
     {
         self::assertEquals('new', EntityStatusEnum::getDefault());
         self::assertEquals('new', EntityStatusEnum::getDefaultValue());
     }
+
 }

@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Fixtures;
 
 use Enum\AbstractEnum;
 
 class EntityStatusEnum extends AbstractEnum
 {
-    const NEW_ENTITY = 'new';
-    const MODIFIED_ENTITY = 'modified';
-    const SAVED_ENTITY = 'saved';
+
+    public const NEW_ENTITY = 'new';
+    public const MODIFIED_ENTITY = 'modified';
+    public const SAVED_ENTITY = 'saved';
 
     protected static $defaultValue = self::NEW_ENTITY;
+
 }

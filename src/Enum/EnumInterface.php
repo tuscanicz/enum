@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Enum;
 
-/**
- * Class EnumInterface
- * @package Enum
- */
 interface EnumInterface
 {
+
     /**
      * @param mixed $value
      */
@@ -17,4 +16,5 @@ interface EnumInterface
      * @return mixed
      */
     public function getValue();
+
 }
