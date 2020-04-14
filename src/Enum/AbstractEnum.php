@@ -7,17 +7,17 @@ use ReflectionClass;
 
 abstract class AbstractEnum implements EnumInterface
 {
-    /** @var mixed */
+    /** @var string|int|null */
     private $value;
 
     /** @var array */
     private static $cache = [];
 
-    /** @var mixed */
+    /** @var string|int|null */
     protected static $defaultValue;
 
     /**
-     * @param $value
+     * @param string|int|null $value
      * @throws InvalidArgumentException
      */
     public function __construct($value = null)
@@ -32,7 +32,7 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @param $value
+     * @param string|int|null $value
      * @return static
      */
     public static function create($value)
@@ -49,7 +49,7 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @return mixed
+     * @return string|int
      */
     public static function getDefaultValue()
     {
@@ -126,7 +126,7 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @param $value
+     * @param string|int $value
      * @return bool
      */
     public static function hasValue($value)
@@ -176,7 +176,7 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @param EnumInterface|string $value
+     * @param EnumInterface|string|int $value
      * @throws InvalidArgumentException
      * @return bool
      */
@@ -214,10 +214,10 @@ abstract class AbstractEnum implements EnumInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function __toString()
     {
-        return (string)$this->value;
+        return (string) $this->value;
     }
 }
