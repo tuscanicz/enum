@@ -7,6 +7,8 @@ namespace Enum;
 use Fixtures\EmployeeNameEnum;
 use Fixtures\EmployeeNameWithLabelEnum;
 use Fixtures\EntityStatusEnum;
+use Fixtures\EntityStatusMixedTypeEnum;
+use Fixtures\EntityStatusMixedTypeWithNullEnum;
 use Fixtures\ExtendedEnum;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -36,6 +38,32 @@ class AbstractEnumTest extends TestCase
 
         self::assertEquals('george-jones', $enum->getValue());
         self::assertEquals('george-jones', $enum->getLabel());
+    }
+
+    public function testConstructWithMixed(): void
+    {
+        $enumString = new EntityStatusMixedTypeEnum(EntityStatusMixedTypeEnum::NEW_ENTITY);
+
+        self::assertEquals('new', $enumString->getValue());
+        self::assertEquals('new', $enumString->getLabel());
+
+        $enumNumeric = new EntityStatusMixedTypeEnum(EntityStatusMixedTypeEnum::MODIFIED_ENTITY);
+
+        self::assertEquals(2, $enumNumeric->getValue());
+        self::assertEquals(2, $enumNumeric->getLabel());
+    }
+
+    public function testConstructWithNullAndMixed(): void
+    {
+        $enumWithNullValue = new EntityStatusMixedTypeWithNullEnum(EntityStatusMixedTypeWithNullEnum::NEW_ENTITY);
+
+        self::assertEquals('default-value', $enumWithNullValue->getValue());
+        self::assertEquals('default-value', $enumWithNullValue->getLabel());
+
+        $enumNumeric = new EntityStatusMixedTypeWithNullEnum(EntityStatusMixedTypeWithNullEnum::MODIFIED_ENTITY);
+
+        self::assertEquals(2, $enumNumeric->getValue());
+        self::assertEquals(2, $enumNumeric->getLabel());
     }
 
     public function testConstructWithInvalidArgumentWillFail(): void
